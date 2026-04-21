@@ -14,7 +14,7 @@ def predict_volatility_service(ticker: str) -> dict:
     # Simula a volatilidade atual entre 15% e 35%
     current_vol = random.uniform(0.15, 0.35)
     
-    # Simula a volatilidade futura (pode subir ou descer um pouco)
+    # Simula a volatilidade futura 
     pred_vol = current_vol * random.uniform(0.9, 1.2)
     
     # Regra de negócio simples para classificar o risco
@@ -27,8 +27,6 @@ def predict_volatility_service(ticker: str) -> dict:
 
     # --- FIM DO MOCK ---
 
-    # Retornamos um dicionário puro. Repare que as chaves (ticker, current_volatility...) 
-    # são EXATAMENTE as mesmas que você definiu lá no Contrato (prediction.py).
     return {
         "ticker": ticker.upper(),
         "current_volatility": round(current_vol, 4),

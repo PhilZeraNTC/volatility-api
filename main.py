@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Importamos o "ramal" que você criou na Etapa 6
+# import do ramal
 from app.api.endpoints import router as api_router
 
 # Cria a instância oficial do app web
@@ -17,13 +17,11 @@ app = FastAPI(
 # O navegador bloqueia isso por segurança. O CORS avisa: "Pode confiar, eu deixo ele conectar".
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Na vida real colocamos o site oficial. Aqui liberamos tudo para testes.
+    allow_origins=["*"], # em breve colocar o site oficial aqui. Por enquanto liberamos tudo para testes.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Aqui nós "plugamos" o ramal no aplicativo principal
+# plugando o ramal no app
 app.include_router(api_router)
-
-# Fim! Limpo, direto e profissional.

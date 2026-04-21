@@ -14,12 +14,10 @@ async def get_prediction(ticker: str):
     e devolve a previsão formatada.
     """
     try:
-        # Chamamos o Motor que você criou na etapa anterior
+        # Chamando o service
         result = predict_volatility_service(ticker)
         return result
         
     except Exception as e:
-        # Se algo der errado lá no motor, nós capturamos o erro aqui
-        # e devolvemos um Erro 400 (Bad Request) bonitinho para o usuário,
-        # em vez de deixar o servidor "crashar".
+        # Se algo der errado lá no service, captura o erro aqui
         raise HTTPException(status_code=400, detail=str(e))
