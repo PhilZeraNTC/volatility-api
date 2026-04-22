@@ -51,24 +51,6 @@ async function buscarDados() {
 </script>
 
 <template>
-  <header class="header-estilizado">
-    <div class="container">
-      <a href="/" class="logo">
-        <img :src="LigaLogo" alt="Logo" class="icone-logo" />
-        <div class="logo-text-wrapper">
-          <span class="texto-logo">Liga UTFPR</span>
-          <span class="subtexto-logo">Predictor</span>
-        </div>
-      </a>
-
-
-      <nav :class="['navegacao', { 'ativo': menuAberto }]">
-        <a href="#app" class="nav-link">Inicio</a>
-        <a href="#sobre" class="nav-link">Sobre</a>
-      </nav>
-    </div>
-  </header>
-
   <main id="app">
     <section id="center">
       <div class="search-section">
@@ -150,37 +132,11 @@ async function buscarDados() {
     </div>
   </section>
 
-  <footer class="footer-simples">
-    <p>&copy; 2026 Liga de Mercado Financeiro - UTFPR</p>
-  </footer>
+  
 </template>
 
 <style scoped>
 /* Reaproveitando suas variáveis do root */
-.header-estilizado {
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.navegacao {
-  display: flex;
-  align-items: center;
-  gap: 24px; /* Espaço entre os links */
-}
-
-.nav-link {
-  text-decoration: none;
-  color: var(--text); /* Cor suave vinda do seu style.css */
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: var(--accent); /* Roxo ao passar o mouse */
-}
 
 .container {
   max-width: 1126px;
@@ -192,37 +148,6 @@ async function buscarDados() {
 }
 
 /* Logo UX */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-
-.icone-logo {
-  height: 40px;
-  width: auto;
-}
-
-.logo-text-wrapper {
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-}
-
-.texto-logo {
-  color: var(--text-h);
-  font-weight: 700;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.subtexto-logo {
-  color: var(--accent);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
 
 /* Seção de Busca */
 .search-section {
@@ -442,13 +367,6 @@ input:focus { outline: none; }
   line-height: 1.5;
 }
 
-.footer-simples {
-  padding: 40px;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--text);
-}
 /* Ajuste Responsivo */
 @media (max-width: 900px) {
   .sobre-grid {
