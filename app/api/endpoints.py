@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from app.schemas.prediction import PredictionResponse
-from app.services.model_service import predict_volatility_service
+from app.services.model_service import predictor
 
 # O APIRouter é como um "mini-aplicativo" que gerencia um grupo de rotas.
 # Isso mantém o projeto organizado quando ele cresce.
@@ -15,7 +16,7 @@ async def get_prediction(ticker: str):
     """
     try:
         # Chamando o service
-        result = predict_volatility_service(ticker)
+        result = predictor.get_prediction_data(ticker)
         return result
         
     except Exception as e:
