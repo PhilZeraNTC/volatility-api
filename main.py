@@ -30,7 +30,7 @@ app.add_middleware(
 app.include_router(api_router)
 
 
-public_path = "front/volatility/dist"
+public_path = "front/src/dist"
 
 #verifica e monta os arquivos estaticos do front end
 if os.path.exists(os.path.join(public_path, "assets")):
