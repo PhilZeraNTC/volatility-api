@@ -40,8 +40,8 @@ const getDataProjecao = () => {
       </div>
       <div class="divisor"></div>
       <div class="stat highlight">
-        <label>Projeção para {{ getDataProjecao() }}</label>
-        <div class="val">{{ (ativo.predicted_volatility * 100).toFixed(2) }}%</div>
+        <label>Projeção (Próximos 5 dias úteis)</label>
+      <div class="val">{{ (ativo.predicted_volatility * 100).toFixed(2) }}%</div>
       </div>
     </div>
 
