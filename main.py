@@ -14,10 +14,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# --- CONFIGURAÇÃO DE CORS (Crucial!) ---
-# Quando o cara do Frontend for rodar a tela no computador dele, a tela vai abrir
-# em uma porta (ex: localhost:3000) e nossa API está em outra (localhost:8000).
-# O navegador bloqueia isso por segurança. O CORS avisa: "Pode confiar, eu deixo ele conectar".
+
+# --- CONFIGURAÇÃO DE CORS ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # em breve colocar o site oficial aqui. Por enquanto liberamos tudo para testes.
@@ -27,7 +25,7 @@ app.add_middleware(
 )
 
 # plugando o ramal no app
-app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
 
 
 public_path = "front/src/dist"

@@ -1,8 +1,11 @@
 # 📈 Volatility Predictor - Liga de Mercado Financeiro UTFPR
 
-![Python](https://img.shields.io/badge/Python-3.14-blue?style=for-the-badge&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-v0.104-009688?style=for-the-badge&logo=fastapi)
-![LightGBM](https://img.shields.io/badge/LightGBM-4.1.0-orange?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-v0.115-009688?style=for-the-badge&logo=fastapi)
+![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=for-the-badge&logo=vuedotjs)
+![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite)
+![Chart.js](https://img.shields.io/badge/Chart.js-4.4-FF6384?style=for-the-badge&logo=chartdotjs)
+![LightGBM](https://img.shields.io/badge/LightGBM-4.5.0-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
 Este repositório contém a fundação de uma ferramenta de **Data Science aplicada ao Mercado Financeiro**, focada na previsão de **Volatilidade Realizada** de ativos da B3. 
@@ -17,16 +20,20 @@ No mercado de capitais, a volatilidade não é apenas uma medida de variação d
 
 ## 🏗️ Arquitetura do Sistema
 Seguimos uma **Layered Architecture (Arquitetura em Camadas)** para garantir a separação de responsabilidades, facilitando a manutenção e a integração futura com bancos de dados.
-
 ```text
-volatility-api/
-├── main.py              # Ponto de entrada e inicialização do servidor
-├── app/
-│   ├── api/             # Camada de Apresentação (Endpoints/Rotas)
-│   ├── schemas/         # Camada de Validação (Contratos Pydantic)
-│   └── services/        # Camada de Lógica de Negócio e Inferência ML
-└── ml_models/           # Artefatos e modelos treinados (.joblib)
-
+.
+├── main.py               # Ponto de entrada da API (FastAPI)
+├── requirements.txt      # Dependências do ecossistema Python
+├── ml_models/            # Modelos preditivos serializados (.joblib)
+├── app/                  # Núcleo da aplicação
+│   ├── api/              # Controladores e rotas
+│   ├── schemas/          # Modelos de dados (Pydantic)
+│   └── services/         # Engine de ML e engenharia de features
+└── front/                # Interface do utilizador (Vite + Vue.js 3)
+    ├── src/
+    │   ├── components/   # Componentes modulares (Gráficos, Cards)
+    │   └── pages/        # Views principais
+    └── package.json      # Dependências do Frontend
 ```
 ## 🛠️ Stack Tecnológica
 - **Linguagem:** Python 3.14
@@ -58,7 +65,7 @@ volatility-api/
 
 3. **Instale as dependências:**
    ```bash
-   pip install fastapi uvicorn yfinance lightgbm pydantic scikit-learn pandas
+   pip install -r requirements.txt
    ```
 
 4. **Inicie o servidor:**
@@ -70,7 +77,7 @@ volatility-api/
    Acesse `http://127.0.0.1:8000/docs` para visualizar o Swagger UI e testar as previsões em tempo real.
 
 ## 🔌 API Documentation
-### `GET /predict/{ticker}`
+### `GET /api/predict/{ticker}`
 Retorna a volatilidade atual e a previsão para a janela futura.
 
 **Parâmetros:**
@@ -82,16 +89,53 @@ Retorna a volatilidade atual e a previsão para a janela futura.
   "ticker": "PETR4.SA",
   "current_volatility": 0.2541,
   "predicted_volatility": 0.2815,
-  "risk_status": "ALTO"
+  "risk_status": "ALTO",
+  "last_update": "23:48:10"
 }
 ```
+## Frontend (Dashboard Interativo)
+
+A interface foi construída utilizando **Vue.js 3** com a **Composition API**, focando em uma experiência de usuário (UX) fluida e reativa para o monitoramento de riscos.
+
+## 🛠️ Stack Tecnológica
+* **Framework:** Vue.js 3 (Vite)
+* **Gráficos:** Chart.js com integração `vue-chartjs`
+* **Ícones:** Lucide Icons / SVG customizados
+* **Estilização:** CSS3 Moderno (Variáveis e Animações customizadas)
+
+## 🚀 Comandos de Inicialização
+
+Certifique-se de ter o [Node.js](https://nodejs.org/) instalado (versão 18 ou superior).
+
+
+1. **Navegar até o diretório do frontend**
+```bash
+cd front/src
+```
+1. **Instalar as dependências do projeto**
+```bash
+npm install
+```
+2. **Iniciar o servidor de desenvolvimento com Hot Reload**
+```bash
+npm run dev
+```
+3. **Gerar a versão de produção (Otimizada)**
+```bash
+npm run build
+```
+4. **Acesse a Dashboard:**
+   Acesse o link do console para a versão de desenvolvimento.
+   Acesse `http://127.0.0.1:8000/` para a versão de produção.
 
 ## 📈 Roadmap de Desenvolvimento
 - [x] Setup da arquitetura base e FastAPI.
 - [x] Mock de inferência para integração com Frontend.
+- [x] Dashboard interativo com Vite + Vue.js 3.
+- [ ] Cache de predições atualizado a 00:10 para otimização de requests.
 - [ ] Treinamento final do modelo LightGBM para múltiplos ativos (PETR4, VALE3, IBOV).
 - [ ] Implementação de Feature Engineering (RSI, Médias Móveis, Retornos Log).
-- [ ] Integração com Dashboard interativo em React/TypeScript.
+
 
 ---
 *Desenvolvido com foco em excelência técnica pela Diretoria de Data Science da Liga de Mercado Financeiro UTFPR-AP.*
