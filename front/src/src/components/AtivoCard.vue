@@ -6,6 +6,12 @@ defineProps(['ativo'])
 
 // Define o evento de clique no botão deletar
 const emit = defineEmits(['remover'])
+
+// Função para formatar o nome do status (ex: de "NORMAL" para "Risco Normal")
+const formatStatus = (status) => {
+  if (!status) return '---'
+  return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+}
 </script>
 
 <template>
@@ -13,24 +19,31 @@ const emit = defineEmits(['remover'])
     <div class="card-header">
       <div class="ticker-box">
         <span class="ticker-name">{{ ativo.ticker }}</span>
-        <span :class="['risk-badge', ativo.risk_status]">{{ ativo.risk_status }}</span>
+        <span :class="['risk-badge', ativo.risk_status]">
+          {{ formatStatus(ativo.risk_status) }}
+        </span>
       </div>
-      <button @click="emit('remover', ativo.ticker)" class="btn-delete">&times;</button>
+      <button @click="emit('remover', ativo.ticker)" class="btn-delete" title="Remover Ativo">&times;</button>
     </div>
 
     <div class="card-body">
       <div class="stat">
-        <label>Atual</label>
+        <label>Volatilidade Atual</label>
         <div class="val">{{ (ativo.current_volatility * 100).toFixed(2) }}%</div>
       </div>
+      <div class="divisor"></div>
       <div class="stat highlight">
-        <label>Projeção</label>
+        <label>Projeção (5d)</label>
         <div class="val">{{ (ativo.predicted_volatility * 100).toFixed(2) }}%</div>
       </div>
     </div>
 
     <div class="mini-chart-wrapper">
        <MiniChart :current="ativo.current_volatility" :predicted="ativo.predicted_volatility" />
+    </div>
+    
+    <div class="card-footer">
+      <span class="update-time">Análise Gerada via LGBM</span>
     </div>
   </div>
 </template>
@@ -40,12 +53,23 @@ const emit = defineEmits(['remover'])
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 20px;
-  width: 320px; /* LARGURA FIXA PARA NÃO ESPALHAR */
+  padding: 24px;
+  width: 100%; /* Deixa o grid do Playground controlar a largura */
+  max-width: 350px;
   display: flex;
-  flex-direction: column; /* FORÇA UM ABAIXO DO OUTRO */
-  gap: 15px;
-  box-shadow: var(--shadow);
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de brilho sutil no hover */
+.ativo-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 .card-header {
@@ -54,68 +78,114 @@ const emit = defineEmits(['remover'])
   align-items: center;
 }
 
+.ticker-name { 
+  font-size: 1.4rem; 
+  font-weight: 800; 
+  color: var(--text-h); 
+  letter-spacing: -0.5px;
+}
+
+.risk-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+/* CORES DINÂMICAS REFINADAS */
+.ALTO { 
+  background: rgba(239, 68, 68, 0.15);
+  color: #ff5f5f; 
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.NORMAL { 
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80; 
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.BAIXO {
+  background: rgba(14, 165, 233, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
 .card-body {
   display: flex;
-  justify-content: space-between; /* Coloca Atual na esquerda e Projeção na direita */
-  text-align: left;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.divisor {
+  width: 1px;
+  height: 30px;
+  background: var(--border);
+  opacity: 0.5;
+}
+
+.stat label { 
+  font-size: 0.65rem; 
+  text-transform: uppercase; 
+  color: var(--text); 
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.stat .val { 
+  font-size: 1.2rem; 
+  font-weight: 700; 
+  color: var(--text-h); 
+}
+
+.highlight .val { 
+  color: var(--accent); 
 }
 
 .mini-chart-wrapper {
   width: 100%;
-  height: 120px; /* Garante espaço para o gráfico */
+  height: 100px;
+  opacity: 0.8;
 }
 
-/* Animação ao passar o mouse */
-.ativo-card:hover {
-  transform: scale(1.03);
-  border-color: var(--accent-border);
+.btn-delete { 
+  background: rgba(255, 255, 255, 0.05); 
+  border: none; 
+  font-size: 1.2rem; 
+  color: var(--text); 
+  cursor: pointer; 
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
 }
 
+.btn-delete:hover { 
+  background: rgba(239, 68, 68, 0.2);
+  color: #ff5f5f; 
+}
 
-.risk-badge {
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 8px;
+.card-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  text-align: center;
+}
+
+.update-time {
+  font-size: 0.6rem;
+  color: var(--text);
+  opacity: 0.5;
   text-transform: uppercase;
-  margin-left: 10px;
-  display: inline-block;
-  line-height: 1;
+  letter-spacing: 1px;
 }
-
-/* CORES PARA DARK MODE (Contraste Máximo) */
-
-/* Risco Alto: Fundo Vermelho Escuro com Texto Vermelho Vivo ou Branco */
-.ALTO { 
-  background: rgba(239, 68, 68, 0.2); /* Vermelho translúcido */
-  color: #ff5f5f;                     /* Vermelho bem claro/vivo */
-  border: 1px solid #ef4444; 
-}
-
-/* Risco Normal: Fundo Verde Escuro com Texto Verde Vivo */
-.NORMAL { 
-  background: rgba(34, 197, 94, 0.2);  /* Verde translúcido */
-  color: #4ade80;                      /* Verde bem claro/vivo */
-  border: 1px solid #22c55e; 
-}
-
-/* Caso tenhas Risco Baixo: Azul */
-.BAIXO {
-  background: rgba(14, 165, 233, 0.2);
-  color: #7dd3fc;
-  border: 1px solid #0ea5e9;
-}
-
-
-.ticker-name { font-size: 1.2rem; font-weight: 800; color: var(--text-h); }
-.risk-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
-
-
-.btn-delete { background: none; border: none; font-size: 1.5rem; color: var(--text); cursor: pointer; }
-.btn-delete:hover { color: #ef4444; }
-
-
-.stat label { font-size: 0.6rem; text-transform: uppercase; color: var(--text); display: block; }
-.stat .val { font-size: 1.3rem; font-weight: 700; color: var(--text-h); }
-.highlight .val { color: var(--accent); }
 </style>
