@@ -14,12 +14,18 @@ const props = defineProps(['ativos'])
 const cores = ['#f3bd48', '#3b82f6', '#10b981', '#ec4899']
 
 const chartData = computed(() => {
-  if (!props.ativos || props.ativos.length === 0) {
-    return { labels: [], datasets: [] }
+  if (!props.ativos || props.ativos.length === 0) return { labels: [], datasets: [] }
+
+  const formatarData = (diasAdicionais = 0) => {
+    const d = new Date()
+    d.setDate(d.getDate() + diasAdicionais)
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
   }
 
-  const labels = ['Volatilidade Atual', 'Projeção (LGBM +5d)']
-  
+const labels = [
+    `Atual (${formatarData(0)})`, 
+    `Previsto (${formatarData(5)})` // Simula os +5 dias da projeção
+  ]  
   return {
     labels,
     datasets: props.ativos.map((ativo, index) => {
