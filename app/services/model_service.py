@@ -96,6 +96,16 @@ class PredictVolatilityService:
         X_input = df_limpo.tail(1)
         vol_referencia = df.loc[X_input.index[0], 'target_vol']
 
+        # Validação de sanidade na volatilidade atual
+        if np.isnan(vol_referencia):
+            raise ValueError("Volatilidade atual corrompida (NaN).")
+        
+        if vol_referencia > 1.0:
+            raise ValueError(
+                f"Volatilidade atual fora do range esperado ({vol_referencia:.2%}). "
+                f"Possível dado corrompido ou ativo ilíquido com gap extremo."
+            )
+
         return X_input, vol_referencia
 
     def get_prediction_data(self, ticker: str):
