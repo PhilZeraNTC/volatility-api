@@ -4,42 +4,50 @@ import AtivoCard from '../components/AtivoCard.vue'
 import UnifiedChart from '../components/UnifiedChart.vue' // Importar novo componente
 
 const listaAtivos = ref([])
-const viewMode = ref('grid') // 'grid' ou 'unified'
+const viewMode = ref('grid')
 const Ativo = ref('')
 const carregando = ref(false)
+const erro = ref('') // Variável para armazenar a mensagem de erro
 
 async function buscar() {
   const t = Ativo.value.toUpperCase().trim()
   if (!t || listaAtivos.value.some(a => a.ticker === t)) return
-  
+
   carregando.value = true
+  erro.value = '' // Limpa erro anterior
+
   try {
-    const res = await fetch(`http://localhost:8000/predict/${t}`)
+    const res = await fetch(`http://localhost:8000/api/predict/${t}`)
     const dados = await res.json()
+
+    // Se a API retornar erro (como Histórico insuficiente), res.ok será false
+    if (!res.ok) {
+      erro.value = dados.detail || "Erro ao buscar ativo"
+      return // Interrompe a função aqui para NÃO criar o card
+    }
+
+    // Se chegou aqui, os dados são válidos
     listaAtivos.value.unshift(dados)
     Ativo.value = ""
-  } finally { carregando.value = false }
+  } catch (e) {
+    erro.value = "Não foi possível conectar ao servidor."
+  } finally {
+    carregando.value = false
+  }
 }
 
 function remover(ticker) {
   listaAtivos.value = listaAtivos.value.filter(a => a.ticker !== ticker)
 }
 </script>
-
 <template>
   <div class="page-container">
-    
+
     <div class="toolbar fade-in">
       <div class="view-toggle">
-        <button 
-          @click="viewMode = 'grid'" 
-          :class="{ active: viewMode === 'grid' }"
-        >Cards</button>
-        <button 
-          @click="viewMode = 'unified'" 
-          :class="{ active: viewMode === 'unified' }" 
-          :disabled="listaAtivos.length === 0"
-        >Comparativo</button>
+        <button @click="viewMode = 'grid'" :class="{ active: viewMode === 'grid' }">Cards</button>
+        <button @click="viewMode = 'unified'" :class="{ active: viewMode === 'unified' }"
+          :disabled="listaAtivos.length === 0">Comparativo</button>
       </div>
 
       <form @submit.prevent="buscar" class="search-form">
@@ -48,17 +56,16 @@ function remover(ticker) {
       </form>
     </div>
 
+    <div v-if="erro" class="error-banner fade-in">
+      {{ erro }}
+    </div>
+
     <div class="content-area">
       <div v-if="viewMode === 'grid'" class="grid-layout fade-in">
-        <AtivoCard 
-          v-for="item in listaAtivos" 
-          :key="item.ticker" 
-          :ativo="item" 
-          @remover="remover" 
-        />
+        <AtivoCard v-for="item in listaAtivos" :key="item.ticker" :ativo="item" @remover="remover" />
       </div>
 
-      <div v-else class="unified-layout fade-in">
+      <div v-else-if="viewMode === 'unified' && listaAtivos.length > 0" class="unified-layout fade-in">
         <UnifiedChart :ativos="listaAtivos" />
       </div>
 
@@ -66,7 +73,6 @@ function remover(ticker) {
         <p>Nenhum ativo monitorado. Adicione um ticker acima.</p>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -151,30 +157,58 @@ function remover(ticker) {
 
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 350px)); 
+  grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
   gap: 24px;
   justify-content: center;
   width: 100%;
 }
 
-.empty { 
-  text-align: center; 
-  opacity: 0.5; 
-  margin-top: 5rem; 
+.empty {
+  text-align: center;
+  opacity: 0.5;
+  margin-top: 5rem;
   color: var(--text);
 }
 
 .fade-in {
   animation: slideUp 0.5s ease-out forwards;
 }
+
+.error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ff5f5f;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 12px 20px;
+  border-radius: 12px;
+  max-width: 450px;
+  margin: 0 auto 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Garante que o input bloqueie durante o load */
+.search-form input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
-  
-  .toolbar { flex-direction: column; }
-  
+
+  .toolbar {
+    flex-direction: column;
+  }
+
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
