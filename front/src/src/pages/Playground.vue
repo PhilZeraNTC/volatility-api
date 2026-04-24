@@ -1,36 +1,41 @@
 <script setup>
 import { ref } from 'vue'
 import AtivoCard from '../components/AtivoCard.vue'
-import UnifiedChart from '../components/UnifiedChart.vue' // Importar novo componente
+import UnifiedChart from '../components/UnifiedChart.vue'
 
 const listaAtivos = ref([])
 const viewMode = ref('grid')
 const Ativo = ref('')
 const carregando = ref(false)
-const erro = ref('') // Variável para armazenar a mensagem de erro
+const erro = ref('')
 
 async function buscar() {
   const t = Ativo.value.toUpperCase().trim()
-  if (!t || listaAtivos.value.some(a => a.ticker === t)) return
+  if (!t) return
+  if (listaAtivos.value.some(a => a.ticker === t)) {
+    erro.value = "Este ativo já foi adicionado."
+    return
+  }
 
   carregando.value = true
-  erro.value = '' // Limpa erro anterior
+  erro.value = ''
 
   try {
     const res = await fetch(`http://localhost:8000/api/predict/${t}`)
     const dados = await res.json()
 
-    // Se a API retornar erro (como Histórico insuficiente), res.ok será false
     if (!res.ok) {
-      erro.value = dados.detail || "Erro ao buscar ativo"
-      return // Interrompe a função aqui para NÃO criar o card
+      erro.value = dados.detail || "Ativo não encontrado ou dados insuficientes."
+      return
     }
 
-    // Se chegou aqui, os dados são válidos
     listaAtivos.value.unshift(dados)
     Ativo.value = ""
+    // Se for o primeiro ativo, garante que está no modo grid
+    if(listaAtivos.value.length === 1) viewMode.value = 'grid'
+    
   } catch (e) {
-    erro.value = "Não foi possível conectar ao servidor."
+    erro.value = "Erro de conexão com o servidor."
   } finally {
     carregando.value = false
   }
@@ -38,27 +43,43 @@ async function buscar() {
 
 function remover(ticker) {
   listaAtivos.value = listaAtivos.value.filter(a => a.ticker !== ticker)
+  if (listaAtivos.value.length === 0) viewMode.value = 'grid'
 }
 </script>
+
 <template>
   <div class="page-container">
+    <div class="header-section fade-in">
+      <h1>Playground de Volatilidade</h1>
+      <p>Monitore múltiplos ativos e compare projeções de risco em tempo real.</p>
+    </div>
 
     <div class="toolbar fade-in">
       <div class="view-toggle">
-        <button @click="viewMode = 'grid'" :class="{ active: viewMode === 'grid' }">Cards</button>
+        <button @click="viewMode = 'grid'" :class="{ active: viewMode === 'grid' }">
+          <span class="icon">🗂️</span> Cards
+        </button>
         <button @click="viewMode = 'unified'" :class="{ active: viewMode === 'unified' }"
-          :disabled="listaAtivos.length === 0">Comparativo</button>
+          :disabled="listaAtivos.length === 0">
+          <span class="icon">📊</span> Comparativo
+        </button>
       </div>
 
-      <form @submit.prevent="buscar" class="search-form">
-        <input v-model="Ativo" placeholder="Ticker (PETR4.SA)..." />
-        <button type="submit" :disabled="carregando">+</button>
+      <form @submit.prevent="buscar" class="search-form" :class="{ 'is-loading': carregando }">
+        <input v-model="Ativo" placeholder="Ex: PETR4.SA" :disabled="carregando" />
+        <button type="submit" :disabled="carregando">
+          <span v-if="!carregando">+</span>
+          <span v-else class="spinner"></span>
+        </button>
       </form>
     </div>
 
-    <div v-if="erro" class="error-banner fade-in">
-      {{ erro }}
-    </div>
+    <Transition name="slide-fade">
+      <div v-if="erro" class="error-banner">
+        <span class="error-icon">⚠️</span> {{ erro }}
+        <button @click="erro = ''" class="close-error">×</button>
+      </div>
+    </Transition>
 
     <div class="content-area">
       <div v-if="viewMode === 'grid'" class="grid-layout fade-in">
@@ -69,146 +90,65 @@ function remover(ticker) {
         <UnifiedChart :ativos="listaAtivos" />
       </div>
 
-      <div v-if="listaAtivos.length === 0" class="empty">
-        <p>Nenhum ativo monitorado. Adicione um ticker acima.</p>
+      <div v-if="listaAtivos.length === 0 && !carregando" class="empty fade-in">
+        <div class="empty-icon">📈</div>
+        <p>Sua lista está vazia.</p>
+        <span>Digite um ticker acima para começar a análise.</span>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.page-container {
-  max-width: 1126px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+/* Adicionando ao que você já tem */
+.header-section { margin-bottom: 2rem; }
+.header-section h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.header-section p { color: var(--text); font-size: 1rem; }
 
 .toolbar {
   display: inline-flex;
-  align-items: center;
-  gap: 15px;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 10px 20px;
-  border-radius: 20px;
-  margin-bottom: 3rem;
-  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  background: rgba(22, 26, 35, 0.6);
+  z-index: 10;
 }
 
-.view-toggle {
-  display: flex;
-  background: var(--code-bg);
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  height: 42px;
-  box-sizing: border-box;
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: block;
 }
 
-.view-toggle button {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  padding: 0 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.2s;
-  height: 100%;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.view-toggle button.active {
-  background: var(--accent);
-  color: white;
-}
-
-.search-form {
-  display: flex;
-  align-items: center;
-  background: var(--code-bg);
-  padding: 4px 4px 4px 15px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  height: 42px;
-  width: 300px;
-  box-sizing: border-box;
-}
-
-.search-form input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-h);
-  outline: none;
-  font-size: 0.9rem;
-}
-
-.search-form button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.grid-layout {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
-  gap: 24px;
-  justify-content: center;
-  width: 100%;
-}
-
-.empty {
-  text-align: center;
-  opacity: 0.5;
-  margin-top: 5rem;
-  color: var(--text);
-}
-
-.fade-in {
-  animation: slideUp 0.5s ease-out forwards;
-}
+.slide-fade-enter-active, .slide-fade-leave-active { transition: all 0.3s ease; }
+.slide-fade-enter-from, .slide-fade-leave-to { opacity: 0; transform: translateY(-10px); }
 
 .error-banner {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ff5f5f;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  padding: 12px 20px;
-  border-radius: 12px;
-  max-width: 450px;
-  margin: 0 auto 2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
 }
 
-/* Garante que o input bloqueie durante o load */
-.search-form input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.close-error {
+  background: transparent;
+  border: none;
+  color: #ff5f5f;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 10px;
 }
+
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+.empty span { font-size: 0.85rem; opacity: 0.6; }
 
 @media (max-width: 768px) {
-
-  .toolbar {
-    flex-direction: column;
-  }
-
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .toolbar { flex-direction: column; width: 100%; }
+  .search-form { width: 100%; }
 }
 </style>
