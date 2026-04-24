@@ -69,13 +69,13 @@ const options = {
   },
   scales: {
     y: {
-      grace: '5%',
+      grace: '10%',
       grid: { color: 'rgba(255,255,255,0.05)' },
       ticks: { 
-        color: '#666',
+        color: '#888',
         callback: (value) => value + '%' // Formata como porcentagem
       },
-      title: { display: true, text: 'Volatilidade Anualizada', color: '#444' }
+      title: { display: true, text: 'Volatilidade Anualizada', color: '#666' }
     },
     x: {
       grid: { display: false },
@@ -99,7 +99,7 @@ const options = {
 
 <style scoped>
 .unified-card {
-  background: var(--code-bg);
+  background: #13111a;
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 2rem;
@@ -109,7 +109,7 @@ const options = {
   text-align: left;
   margin-bottom: 1.5rem;
 }
-.chart-header h3 { color: var(--text-h); margin-bottom: 5px; }
-.chart-header p { color: #666; font-size: 0.9rem; }
+.chart-header h3 { color: #ffffff; margin-bottom: 5px; }
+.chart-header p { color: #888; font-size: 0.9rem; }
 .chart-container { height: 450px; }
 </style>
