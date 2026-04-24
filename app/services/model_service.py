@@ -147,7 +147,7 @@ class PredictVolatilityService:
             # Nova lógica de thresholds:
             if previsao_final >= 0.40:
                 status = "ALTO"
-            elif previsao_final >= 0.20:
+            elif previsao_final >= 0.25:
                 status = "MODERADO"
             else:
                 status = "NORMAL"
