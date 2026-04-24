@@ -134,7 +134,7 @@ npm run build
 - [x] Dashboard interativo com Vite + Vue.js 3.
 - [ ] Cache de predições atualizado a 00:10 para otimização de requests.
 - [ ] Treinamento final do modelo LightGBM para múltiplos ativos (PETR4, VALE3, IBOV).
-- [ ] Implementação de Feature Engineering (RSI, Médias Móveis, Retornos Log).
+- [x] Implementação de Feature Engineering (RSI, Médias Móveis, Retornos Log).
 
 
 ---
