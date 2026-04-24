@@ -1,5 +1,8 @@
 <script setup>
 import LigaLogo from './assets/Liga.svg'
+import { ref } from 'vue'
+  
+const menuAberto = ref(false)
 </script>
 
 <template>
@@ -34,13 +37,16 @@ import LigaLogo from './assets/Liga.svg'
 <style scoped>
 .conteudo-principal {
   flex-grow: 1; 
+  min-height: calc(100vh - 150px);
+  padding-bottom: 40px;
 }
 .header-estilizado {
-  background: var(--bg);
+  background: rgba(15, 17, 26, 0.8); /* Fundo semi-transparente */
+  backdrop-filter: blur(12px);      /* Efeito de vidro embaçado */
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 .navegacao {
   display: flex;
@@ -50,14 +56,21 @@ import LigaLogo from './assets/Liga.svg'
 
 .nav-link {
   text-decoration: none;
-  color: var(--text); /* Cor suave vinda do seu style.css */
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: color 0.2s;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-  color: var(--accent); /* Roxo ao passar o mouse */
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.router-link-active {
+  color: var(--accent);
 }
 
 .container {
@@ -98,6 +111,13 @@ import LigaLogo from './assets/Liga.svg'
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(243, 189, 72, 0.3);
+  animation: pulse-glow 3s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .footer-simples {
