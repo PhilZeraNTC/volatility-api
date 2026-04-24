@@ -33,9 +33,12 @@ const chartData = computed(() => {
         data: [atual, previsto],
         borderColor: color,
         backgroundColor: color.replace('hsl', 'hsla').replace(')', ', 0.1)'),
-        borderWidth: 3,
+        borderWidth: 4,
         fill: true,
-        tension: 0.2
+        tension: 0.4,
+        pointRadius: 6,
+        pointBackgroundColor: color,
+        pointHoverRadius: 8
       }
     })
   }
@@ -66,6 +69,7 @@ const options = {
   },
   scales: {
     y: {
+      grace: '5%',
       grid: { color: 'rgba(255,255,255,0.05)' },
       ticks: { 
         color: '#666',
