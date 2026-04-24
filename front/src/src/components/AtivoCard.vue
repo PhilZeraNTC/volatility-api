@@ -7,10 +7,17 @@ defineProps(['ativo'])
 // Define o evento de clique no botão deletar
 const emit = defineEmits(['remover'])
 
-// Função para formatar o nome do status (ex: de "NORMAL" para "Risco Normal")
+// Função para formatar o nome do status
 const formatStatus = (status) => {
   if (!status) return '---'
   return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+}
+
+// Função para calcular a data alvo (Hoje + 5 dias)
+const getDataProjecao = () => {
+  const d = new Date()
+  d.setDate(d.getDate() + 5)
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 }
 </script>
 
@@ -33,7 +40,7 @@ const formatStatus = (status) => {
       </div>
       <div class="divisor"></div>
       <div class="stat highlight">
-        <label>Projeção (5d)</label>
+        <label>Projeção para {{ getDataProjecao() }}</label>
         <div class="val">{{ (ativo.predicted_volatility * 100).toFixed(2) }}%</div>
       </div>
     </div>
@@ -43,18 +50,19 @@ const formatStatus = (status) => {
     </div>
     
     <div class="card-footer">
-      <span class="update-time">Análise Gerada via LGBM</span>
+      <span class="update-time">Análise Gerada via LGBM • {{ new Date().toLocaleDateString('pt-BR') }}</span>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Mantive seus estilos que já estão ótimos */
 .ativo-card {
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 24px;
-  width: 100%; /* Deixa o grid do Playground controlar a largura */
+  width: 100%;
   max-width: 350px;
   display: flex;
   flex-direction: column;
@@ -65,7 +73,6 @@ const formatStatus = (status) => {
   overflow: hidden;
 }
 
-/* Efeito de brilho sutil no hover */
 .ativo-card:hover {
   transform: translateY(-5px);
   border-color: var(--accent);
@@ -95,7 +102,6 @@ const formatStatus = (status) => {
   vertical-align: middle;
 }
 
-/* CORES DINÂMICAS REFINADAS */
 .ALTO { 
   background: rgba(239, 68, 68, 0.15);
   color: #ff5f5f; 
