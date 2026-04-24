@@ -134,11 +134,19 @@ class PredictVolatilityService:
 
             previsao_final = float(np.clip(vol_atual + delta_previsto, 0.01, 0.60))
 
+            # Nova lógica de thresholds:
+            if previsao_final >= 0.40:
+                status = "ALTO"
+            elif previsao_final >= 0.20:
+                status = "MODERADO"
+            else:
+                status = "NORMAL"
+
             resultado = {
                 "ticker": ticker,
                 "current_volatility": float(vol_atual),
                 "predicted_volatility": previsao_final,
-                "risk_status": "ALTO" if previsao_final > (vol_atual * 1.1) else "NORMAL",
+                "risk_status": status,
                 "last_update": datetime.now().strftime("%H:%M:%S")
             }
 
