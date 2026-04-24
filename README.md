@@ -112,21 +112,21 @@ Certifique-se de ter o [Node.js](https://nodejs.org/) instalado (versão 18 ou s
 ```bash
 cd front/src
 ```
-1. **Instalar as dependências do projeto**
+2. **Instalar as dependências do projeto**
 ```bash
 npm install
 ```
-2. **Iniciar o servidor de desenvolvimento com Hot Reload**
+3. **Iniciar o servidor de desenvolvimento com Hot Reload**
 ```bash
 npm run dev
 ```
-3. **Gerar a versão de produção (Otimizada)**
+4. **Gerar a versão de produção (Otimizada)**
 ```bash
 npm run build
 ```
-4. **Acesse a Dashboard:**
-   Acesse o link do console para a versão de desenvolvimento.
-   Acesse `http://127.0.0.1:8000/` para a versão de produção.
+5. **Acesse a Dashboard:**
+- Acesse o link do console para a versão de desenvolvimento.
+- Acesse `http://127.0.0.1:8000/` para a versão de produção.
 
 ## 📈 Roadmap de Desenvolvimento
 - [x] Setup da arquitetura base e FastAPI.
