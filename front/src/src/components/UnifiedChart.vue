@@ -23,8 +23,8 @@ const chartData = computed(() => {
   }
 
 const labels = [
-    `Atual (${formatarData(0)})`, 
-    `Previsto (${formatarData(5)})` // Simula os +5 dias da projeção
+  'Volatilidade Atual', 
+  'Projeção (LGBM +5D)'
   ]  
   return {
     labels,
